@@ -14,97 +14,73 @@ setupFilePath() {
 
 readInSettings() {
     global mode
-    global PlacementPatternDropdown, PlaceSpeed, MatchMaking, ChallengeBox, AverageUpgrade
+    global PlacementPatternDropdown, PlaceSpeed, MatchMaking, ChallengeBox, AverageUpgrade, Alwayontop
 
     settingsFile := setupFilePath()
 
-    try {
-        MDo.UI.Text := IniRead(settingsFile, "Mode", "Mode")
-        loop 6 {
-            uIUnitSetting.enabled[A_Index].Value := IniRead(settingsFile, "Enabled Unit", "Enabled" A_Index)
-            uIUnitSetting.placement[A_Index].Text := IniRead(settingsFile, "Placement", "Placement" A_Index)
-            uIUnitSetting.priority[A_Index].Text := IniRead(settingsFile, "Priority", "Priority" A_Index)
-            uIUnitSetting.maxUnit[A_Index].Text := IniRead(settingsFile, "Max Unit", "MaxUnit" A_Index)
-        }
+    MDo.UI.Text := IniRead(settingsFile, "Mode", "Mode")
+    mode := IniRead(settingsFile, "Mode", "Mode")
 
-        Alwayontop.Value := IniRead(settingsFile, "UI", "AlwaysOnTop")
-        PlaceSpeed.Value := IniRead(settingsFile, "PlaceSpeed", "Speed")
-        PlacementPatternDropdown.Value := IniRead(settingsFile, "PlacementLogic", "Logic")
-        MatchMaking.Value := IniRead(settingsFile, "Matchmaking", "Matchmake")
-        ChallengeBox.Value := IniRead(settingsFile, "AutoChallenge", "Challenge")
-        AverageUpgrade.Value := IniRead(settingsFile, "Upgrade", "UpgradeSwitch")
-        AlwayTop()
+    
 
+    loop 6 {
+        uIUnitSetting.enabled[A_Index].Value := IniRead(settingsFile, "Enabled Unit", "Enabled" A_Index)
+        uIUnitSetting.placement[A_Index].Text := IniRead(settingsFile, "Placement", "Placement" A_Index)
+        uIUnitSetting.priority[A_Index].Text := IniRead(settingsFile, "Priority", "Priority" A_Index)
+        uIUnitSetting.maxUnit[A_Index].Text := IniRead(settingsFile, "Max Unit", "MaxUnit" A_Index)
     }
 
-    AddToLog("Configuration settings loaded successfully")
+    Alwayontop.Value := IniRead(settingsFile, "UI", "AlwaysOnTop")
+    PlaceSpeed.Value := IniRead(settingsFile, "PlaceSpeed", "Speed")
+    PlacementPatternDropdown.Value := IniRead(settingsFile, "PlacementLogic", "Logic")
+    MatchMaking.Value := IniRead(settingsFile, "Matchmaking", "Matchmake")
+    ChallengeBox.Value := IniRead(settingsFile, "AutoChallenge", "Challenge")
+    AverageUpgrade.Value := IniRead(settingsFile, "Upgrade", "UpgradeSwitch")
+    AlwayTop()
 
+    AddToLog("Configuration settings loaded successfully")
+    if (MDo.UI.Text != '' && MDo.%MDo.UI.Text% && MDo.%MDo.UI.Text%.UI && MDo.%MDo.UI.Text%.Type) {
+        mdo.%MDo.UI.Text%.UI.Text := IniRead(settingsFile, "Mode", "Map")
+        mdo.%MDo.UI.Text%.Type.Text := IniRead(settingsFile, "Mode", "Type")
+        OnModeChange()
+    }
 }
 
 SaveSettings(*) {
     global mode
-    global PlacementPatternDropdown, PlaceSpeed, MatchMaking, ChallengeBox, AverageUpgrade
+    global PlacementPatternDropdown, PlaceSpeed, MatchMaking, ChallengeBox, AverageUpgrade, Alwayontop
 
+    settingsFile := A_ScriptDir "\Settings\Configuration.ini"
     ; MsgBox(uIUnitSetting.enabled[1].Value)
-    try {
-        settingsFile := A_ScriptDir "\Settings\Configuration.ini"
-        IniWrite MDo.Story.UI.Text, settingsFile, "Mode", "Mode"
-        if (mode = "Story") {
-            IniWrite MDo.Story.UI.Text, settingsFile, "Mode", "Map"
-        } else if (mode = "Raid") {
-            IniWrite MDo.Raid.UI.Text, settingsFile, "Mode", "Map"
-        }
+    IniWrite mode, settingsFile, "Mode", "Mode"
 
-        ; Save settings for each unit
-        loop 6 {
-            IniWrite(uIUnitSetting.enabled[A_Index].Value, settingsFile, "Enabled Unit", "Enabled" A_Index)
-            IniWrite(uIUnitSetting.placement[A_Index].Text, settingsFile, "Placement", "Placement" A_Index)
-            IniWrite(uIUnitSetting.priority[A_Index].Text, settingsFile, "Priority", "Priority" A_Index)
-            IniWrite(uIUnitSetting.maxUnit[A_Index].Text, settingsFile, "Max Unit", "MaxUnit" A_Index)
-        }
-
-        for index, dropDown in dropDowns {
-            IniWrite dropDown.Text, settingsFile, "CardPriority", "Card" index
-        }
-        IniWrite(Alwayontop.Value, settingsFile, "UI", "AlwaysOnTop")
-
-        IniWrite PlacementPatternDropdown.Value, settingsFile, "PlacementLogic", "Logic"
-
-        IniWrite PlaceSpeed.Value, settingsFile, "PlaceSpeed", "Speed"
-
-        IniWrite MatchMaking.Value, settingsFile, "Matchmaking", "Matchmake"
-
-        IniWrite ChallengeBox.Value, settingsFile, "AutoChallenge", "Challenge"
-
-        IniWrite AverageUpgrade.Value, settingsFile, "Upgrade", "UpgradeSwitch"
-
-        ; AddToLog("Configuration settings saved successfully")
+    ; Save settings for each unit
+    loop 6 {
+        IniWrite(uIUnitSetting.enabled[A_Index].Value, settingsFile, "Enabled Unit", "Enabled" A_Index)
+        IniWrite(uIUnitSetting.placement[A_Index].Text, settingsFile, "Placement", "Placement" A_Index)
+        IniWrite(uIUnitSetting.priority[A_Index].Text, settingsFile, "Priority", "Priority" A_Index)
+        IniWrite(uIUnitSetting.maxUnit[A_Index].Text, settingsFile, "Max Unit", "MaxUnit" A_Index)
     }
-}
 
-LoadSettings() {
-    global mode
-    try {
-        settingsFile := A_ScriptDir "\Settings\Configuration.ini"
-        MsgBox(IniRead(settingsFile, "Enabled Unit", "Enabled1"))
-        MDo.UI.Text := IniRead(settingsFile, "Mode", "Mode")
-        loop 6 {
-            uIUnitSetting.enabled[A_Index].Value := IniRead(settingsFile, "Enabled Unit", "Enabled" A_Index)
-            uIUnitSetting.placement[A_Index].Text := IniRead(settingsFile, "Placement", "Placement" A_Index)
-            uIUnitSetting.priority[A_Index].Text := IniRead(settingsFile, "Priority", "Priority" A_Index)
-            uIUnitSetting.maxUnit[A_Index].Text := IniRead(settingsFile, "Max Unit", "MaxUnit" A_Index)
-        }
-        PlaceSpeed.Value := IniRead(settingsFile, "PlaceSpeed", "Speed")
-        PlacementPatternDropdown.Value := IniRead(settingsFile, "PlacementLogic", "Logic")
-        MatchMaking.Value := IniRead(settingsFile, "Matchmaking", "Matchmake")
-        ChallengeBox.Value := IniRead(settingsFile, "AutoChallenge", "Challenge")
-        AverageUpgrade.Value := IniRead(settingsFile, "Upgrade", "UpgradeSwitch")
-        Alwayontop.Value := IniRead(settingsFile, "UI", "AlwaysOnTop")
-        for index, dropDown in dropDowns {
-            dropDown.Text := IniRead(settingsFile, "CardPriority", "Card" index)
-        }
-        AlwayTop()
-        AddToLog("Auto settings loaded successfully")
+    IniWrite(Alwayontop.Value, settingsFile, "UI", "AlwaysOnTop")
+
+    IniWrite PlacementPatternDropdown.Value, settingsFile, "PlacementLogic", "Logic"
+
+    IniWrite PlaceSpeed.Value, settingsFile, "PlaceSpeed", "Speed"
+
+    IniWrite MatchMaking.Value, settingsFile, "Matchmaking", "Matchmake"
+
+    IniWrite ChallengeBox.Value, settingsFile, "AutoChallenge", "Challenge"
+
+    IniWrite AverageUpgrade.Value, settingsFile, "Upgrade", "UpgradeSwitch"
+
+    ; for index, dropDown in dropDowns {
+    ;     IniWrite dropDown.Text, settingsFile, "CardPriority", "Card" index
+    ; }
+    ; AddToLog("Configuration settings saved successfully")
+    if (MDo.UI.Text != '' && MDo.%MDo.UI.Text% && MDo.%MDo.UI.Text%.UI && MDo.%MDo.UI.Text%.Type) {
+        IniWrite MDo.%MDo.UI.Text%.UI.Text, settingsFile, "Mode", "Map"
+        IniWrite MDo.%MDo.UI.Text%.Type.Text, settingsFile, "Mode", "Type"
     }
 }
 

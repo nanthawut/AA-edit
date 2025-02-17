@@ -81,13 +81,8 @@ SaveUINavSettings(*) {
     FileAppend(UINavBox.Value, "Settings\UINavigation.txt", "UTF-8")
 }
 
-;Opens discord Link
-OpenDiscordLink() {
-    Run("https://discord.gg/mistdomain")
-}
-
 AlwayTop(*) {
-    guiAlwayTop := Alwayontop.Value  ? "+AlwaysOnTop" : "-AlwaysOnTop"
+    guiAlwayTop := Alwayontop.Value ? "+AlwaysOnTop" : "-AlwaysOnTop"
     aaMainUI.Opt(guiAlwayTop)
     SaveSettings()
 }
@@ -113,16 +108,16 @@ getCurrentTime() {
 
 OnModeChange(*) {
     global mode
-    selected := MDo.UI.Text
+    mode := MDo.UI.Text
 
     ; Hide all dropdowns first
     MDo.Story.UI.Visible := false
-    MDo.Story.Act.Visible := false
+    MDo.Story.Type.Visible := false
     MDo.Legend.UI.Visible := false
-    MDo.Legend.Act.Visible := false
+    MDo.Legend.Type.Visible := false
     MDo.Raid.UI.Visible := false
-    MDo.Raid.Act.Visible := false
-    MDo.Infinity_Castle.Visible := false
+    MDo.Raid.Type.Visible := false
+    MDo.Infinity_Castle.UI.Visible := false
     MatchMaking.Visible := false
     ReturnLobbyBox.Visible := false
     MDo.Portal.UI.Visible := false
@@ -130,60 +125,12 @@ OnModeChange(*) {
     MDo.Contract.UI.Visible := false
     MDo.Contract.Type.Visible := false
 
-    if (selected = "Story") {
-        MDo.Story.UI.Visible := true
-        MDo.Story.Act.Visible := true
-        mode := "Story"
-    } else if (selected = "Legend") {
-        MDo.Legend.UI.Visible := true
-        MDo.Legend.Act.Visible := true
-        mode := "Legend"
-    } else if (selected = "Raid") {
-        MDo.Raid.UI.Visible := true
-        MDo.Raid.Act.Visible := true
-        mode := "Raid"
-    } else if (selected = "Infinity Castle") {
-        MDo.Infinity_Castle.Visible := true
-        mode := "Infinity Castle"
-    } else if (selected = "Contract") {
-        MDo.Contract.UI.Visible := true
-        MDo.Contract.Type.Visible := true
-        mode := "Contract"
-    } else if (selected = "Portal") {
-        MDo.Portal.UI.Visible := true
-        MDo.Portal.Type.Visible := true
-        mode := "Portal"
-    } else if (selected = "Cursed Womb") {
-        mode := "Cursed Womb"
-    }
     OnConfirmClick()
-}
-
-OnStoryChange(*) {
-    if (MDo.Story.UI.Text != "") {
-        MDo.Story.Act.Visible := true
-    } else {
-        MDo.Story.Act.Visible := false
+    if (MDo.%StrReplace(mode, " ", "_")%) {
+        MDo.%StrReplace(mode, " ", "_")%.UI.Visible := true
+        if (MDo.%StrReplace(mode, " ", "_")%.Type)
+            MDo.%StrReplace(mode, " ", "_")%.Type.Visible := true
     }
-    OnConfirmClick()
-}
-
-OnLegendChange(*) {
-    if (MDo.Legend.UI.Text != "") {
-        MDo.Legend.Act.Visible := true
-    } else {
-        MDo.Legend.Act.Visible := false
-    }
-    OnConfirmClick()
-}
-
-OnRaidChange(*) {
-    if (MDo.Raid.UI.Text != "") {
-        MDo.Raid.Act.Visible := true
-    } else {
-        MDo.Raid.Act.Visible := false
-    }
-    OnConfirmClick()
 }
 
 OnConfirmClick(*) {
@@ -195,42 +142,42 @@ OnConfirmClick(*) {
 
     ; For Story mode, check if both Story and Act are selected
     if (MDo.UI.Text = "Story") {
-        if (MDo.Story.UI.Text = "" || MDo.Story.Act.Text = "") {
+        if (MDo.Story.UI.Text = "" || MDo.Story.Type.Text = "") {
             AddToLog("Please select both Story and Act before F2")
             return
         }
-        AddToLog("Selected " MDo.Story.UI.Text " - " MDo.Story.Act.Text)
-        MatchMaking.Visible := (MDo.Story.Act.Text = "Infinity")
-        ReturnLobbyBox.Visible := (MDo.Story.Act.Text = "Infinity")
-        NextLevelBox.Visible := (MDo.Story.Act.Text != "Infinity")
+        AddToLog("Selected " MDo.Story.UI.Text " - " MDo.Story.Type.Text)
+        MatchMaking.Visible := (MDo.Story.Type.Text = "Infinity")
+        ReturnLobbyBox.Visible := (MDo.Story.Type.Text = "Infinity")
+        NextLevelBox.Visible := (MDo.Story.Type.Text != "Infinity")
     }
     ; For Legend mode, check if both Legend and Act are selected
     else if (MDo.UI.Text = "Legend") {
-        if (MDo.Legend.UI.Text = "" || MDo.Legend.Act.Text = "") {
+        if (MDo.Legend.UI.Text = "" || MDo.Legend.Type.Text = "") {
             AddToLog("Please select both Legend Stage and Act before F2")
             return
         }
-        AddToLog("Selected " MDo.Legend.UI.Text " - " MDo.Legend.Act.Text)
+        AddToLog("Selected " MDo.Legend.UI.Text " - " MDo.Legend.Type.Text)
         MatchMaking.Visible := true
         ReturnLobbyBox.Visible := true
     }
     ; For Cursed Womb, check if both Legend and Act are selected
     else if (MDo.UI.Text = "Cursed Womb") {
-        AddToLog("Selected " MDo.Legend.UI.Text " - " MDo.Legend.Act.Text)
+        AddToLog("Selected " MDo.Legend.UI.Text " - " MDo.Legend.Type.Text)
     }
     ; For Raid mode, check if both Raid and RaidAct are selected
     else if (MDo.UI.Text = "Raid") {
-        if (MDo.Raid.UI.Text = "" || MDo.Raid.Act.Text = "") {
+        if (MDo.Raid.UI.Text = "" || MDo.Raid.Type.Text = "") {
             AddToLog("Please select both Raid and Act before F2")
             return
         }
-        AddToLog("Selected " MDo.Raid.UI.Text " - " MDo.Raid.Act.Text)
+        AddToLog("Selected " MDo.Raid.UI.Text " - " MDo.Raid.Type.Text)
         MatchMaking.Visible := true
         ReturnLobbyBox.Visible := true
     }
     ; For Infinity Castle, check if mode is selected
     else if (MDo.UI.Text = "Infinity Castle") {
-        if (MDo.Infinity_Castle.Text = "") {
+        if (MDo.Infinity_Castle.UI.Text = "") {
             AddToLog("Please select an Infinity Castle difficulty before F2")
             return
         }
@@ -273,11 +220,11 @@ OnConfirmClick(*) {
     ; Hide all controls if validation passes
     ; MDo.UI.Visible := false
     ; MDo.Story.UI.Visible := false
-    ; MDo.Story.Act.Visible := false
+    ; MDo.Story.Type.Visible := false
     ; MDo.Legend.UI.Visible := false
-    ; MDo.Legend.Act.Visible := false
+    ; MDo.Legend.Type.Visible := false
     ; MDo.Raid.UI.Visible := false
-    ; MDo.Raid.Act.Visible := false
+    ; MDo.Raid.Type.Visible := false
     ; MDo.Infinity_Castle.Visible := false
     ; MDo.Portal.UI.Visible := false
     ; MDo.Portal.Type.Visible := false
@@ -483,9 +430,9 @@ CheckForEmptyKeys() {
 }
 
 OpenGithub() {
-    Run("https://github.com/itsRynsRoblox?tab=repositories")
+    Run("https://github.com/nanthawut/AA-edit")
 }
 
-OpenDiscord() {
-    Run("https://discord.gg/6DWgB9XMTV")
-}
+; OpenDiscord() {
+;     Run("")
+; }

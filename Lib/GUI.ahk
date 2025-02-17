@@ -83,10 +83,10 @@ uiBorders.Push(aaMainUI.Add("Text", "x0 y630 w600 h1 +Background" uiTheme[3], ""
 uiBorders.Push(aaMainUI.Add("Text", "x0 y697 w600 h1 +Background" uiTheme[3], "")) ;Roblox second bottom
 
 global robloxHolder := aaMainUI.Add("Text", "3 33 w797 h597 +Background" uiTheme[3], "") ;Roblox window box
-global Discord := aaMainUI.Add("Picture", "553 y-4 w42 h42 +BackgroundTrans", Discord) ;Discord logo
-Discord.OnEvent("Click", (*) => OpenDiscordLink()) ;Open discord
-Alwayontop := aaMainUI.Add("Checkbox", "x500 y40 cffffff Checked", "AlwaysOnTop") ;Minimize gui
-Alwayontop.OnEvent("Click", (*) => AlwayTop()) ;Minimize gui
+; global Discord := aaMainUI.Add("Picture", "553 y-4 w42 h42 +BackgroundTrans", Discord) ;Discord logo
+; Discord.OnEvent("Click", (*) => OpenDiscordLink()) ;Open discord
+Alwayontop := aaMainUI.Add("Checkbox", "x500 y40 cffffff Checked", "AlwaysOnTop")
+Alwayontop.OnEvent("Click", (*) => AlwayTop())
 aaMainUI.SetFont("Bold s16 c" uiTheme[1], "Verdana") ;Font
 global windowTitle := aaMainUI.Add("Text", "x10 y3 w500 h29 +BackgroundTrans", aaTitle "" . "" version) ;Title
 
@@ -265,8 +265,8 @@ PlaceSpeed.OnEvent("Change", SaveSettings)
 
 GithubButton := aaMainUI.Add("Picture", "x10 y640 w40 h40 +BackgroundTrans cffffff", GithubImage)
 GithubButton.OnEvent("Click", (*) => OpenGithub())
-DiscordButton := aaMainUI.Add("Picture", "x60 y645 w60 h34 +BackgroundTrans cffffff", DiscordImage)
-DiscordButton.OnEvent("Click", (*) => OpenDiscord())
+; DiscordButton := aaMainUI.Add("Picture", "x60 y645 w60 h34 +BackgroundTrans cffffff", DiscordImage)
+; DiscordButton.OnEvent("Click", (*) => OpenDiscord())
 
 ;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS
 ;--------------MODE SELECT;--------------MODE SELECT;--------------MODE SELECT;--------------MODE SELECT;--------------MODE SELECT;--------------MODE SELECT
@@ -282,22 +282,24 @@ global MDo := {
             "Magic Town",
             "Haunted Academy", "Magic Hills", "Space Center", "Alien Spaceship", "Fabled Kingdom", "Ruined City",
             "Puppet Island", "Virtual Dungeon", "Snowy Kingdom", "Dungeon Throne", "Mountain Temple", "Rain Village"]),
-        Act: aaMainUI.Add("DropDownList", "x330 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2",
+        Type: aaMainUI.Add("DropDownList", "x330 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2",
             "Act 3", "Act 4", "Act 5", "Act 6", "Infinity"])
     },
     Legend: {
         UI: aaMainUI.Add("DropDownlist", "x170 y53 w150 h180 Choose0 +Center", ["Magic Hills",
             "Space Center", "Fabled Kingdom", "Virtual Dungeon", "Dungeon Throne", "Rain Village"]),
-        Act: aaMainUI.Add("DropDownList", "x330 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2",
+        Type: aaMainUI.Add("DropDownList", "x330 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2",
             "Act 3"])
     },
     Raid: {
         UI: aaMainUI.Add("DropDownList", "x170 y53 w150 h180 Choose0 +Center", ["The Spider",
             "Sacred Planet", "Strange Town", "Ruined City"]),
-        Act: aaMainUI.Add("DropDownList", "x330 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3",
+        Type: aaMainUI.Add("DropDownList", "x330 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3",
             "Act 4", "Act 5"])
     },
-    Infinity_Castle: aaMainUI.Add("DropDownList", "x170 y53 w80 h180 Choose0 +Center", ["Normal", "Hard"]),
+    Infinity_Castle: {
+        UI: aaMainUI.Add("DropDownList", "x170 y53 w80 h180 Choose0 +Center", ["Normal", "Hard"])
+    },
     Contract: {
         UI: aaMainUI.Add("DropDownList", "x170 y53 w80 h180 Choose0 +Center", ["Page 1", "Page 2",
             "Page 3", "Page 4", "Page 5", "Page 6", "Page 4-5"]),
@@ -311,22 +313,22 @@ global MDo := {
     }
 }
 
-MDo.Story.Act.OnEvent("Change", OnConfirmClick)
-MDo.Legend.Act.OnEvent("Change", OnConfirmClick)
-MDo.Raid.Act.OnEvent("Change", OnConfirmClick)
-MDo.Infinity_Castle.OnEvent("Change", OnConfirmClick)
+MDo.Story.Type.OnEvent("Change", OnConfirmClick)
+MDo.Legend.Type.OnEvent("Change", OnConfirmClick)
+MDo.Raid.Type.OnEvent("Change", OnConfirmClick)
+MDo.Infinity_Castle.UI.OnEvent("Change", OnConfirmClick)
 MDo.Contract.UI.OnEvent("Change", OnConfirmClick)
 MDo.Contract.Type.OnEvent("Change", OnConfirmClick)
 MDo.Portal.UI.OnEvent("Change", OnConfirmClick)
 MDo.Portal.Type.OnEvent("Change", OnConfirmClick)
 
 MDo.Story.UI.Visible := false
-MDo.Story.Act.Visible := false
+MDo.Story.Type.Visible := false
 MDo.Legend.UI.Visible := false
-MDo.Legend.Act.Visible := false
+MDo.Legend.Type.Visible := false
 MDo.Raid.UI.Visible := false
-MDo.Raid.Act.Visible := false
-MDo.Infinity_Castle.Visible := false
+MDo.Raid.Type.Visible := false
+MDo.Infinity_Castle.UI.Visible := false
 MDo.Contract.UI.Visible := false
 MDo.Contract.Type.Visible := false
 MDo.Portal.UI.Visible := false
@@ -335,9 +337,9 @@ MatchMaking.Visible := false
 ReturnLobbyBox.Visible := false
 NextLevelBox.Visible := false
 MDo.UI.OnEvent("Change", OnModeChange)
-MDo.Story.UI.OnEvent("Change", OnStoryChange)
-MDo.Legend.UI.OnEvent("Change", OnLegendChange)
-MDo.Raid.UI.OnEvent("Change", OnRaidChange)
+MDo.Story.UI.OnEvent("Change", OnModeChange)
+MDo.Legend.UI.OnEvent("Change", OnModeChange)
+MDo.Raid.UI.OnEvent("Change", OnModeChange)
 ;------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI
 ;------UNIT CONFIGURATION------UNIT CONFIGURATION------UNIT CONFIGURATION/------UNIT CONFIGURATION/------UNIT CONFIGURATION/------UNIT CONFIGURATION/
 
@@ -388,8 +390,8 @@ loop 6 {
     uIUnitSetting.maxUnit[A_Index].OnEvent("Change", SaveSettings)
 }
 
-readInSettings()
 aaMainUI.Show("w600 h700")
+readInSettings()
 WinMove(810, 0, , , "ahk_id " aaMainUIHwnd)
 forceRobloxSize()  ; Initial force size and position
 SetTimer(checkRobloxSize, 600000)  ; Check every 10 minutes

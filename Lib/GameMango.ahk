@@ -12,6 +12,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 Hotkey("F5", (*) => RestartStage())
 Hotkey("F6", (*) => mtstate())
+Hotkey("F7", (*) => MonitorEndScreen()) ; for test
 
 mtstate(*) {
     AddToLog("MonitorStage By F6")
@@ -21,6 +22,7 @@ StartMacro(*) {
     if (!ValidateMode()) {
         return
     }
+    moveRobloxWindow()
     StartSelectedMode()
 }
 
@@ -31,6 +33,7 @@ TogglePause(*) {
         Sleep(1000)
     } else {
         AddToLog("Macro Resumed")
+        moveRobloxWindow()
         Sleep(1000)
     }
 }
@@ -136,9 +139,9 @@ UpgradeUnits(state, oneTick) {
     if (hasSuccessAll)
         return
 
-    AddToLog("Initiating Unit Upgrades...")
+    ; AddToLog("Initiating Unit Upgrades...")
 
-    AddToLog("Using priority upgrade system")
+    ; AddToLog("Using priority upgrade system")
 
     ; Go through each priority level (1-6)
     for priorityNum in [1, 2, 3, 4, 5, 6] {
@@ -189,7 +192,7 @@ UpgradeUnits(state, oneTick) {
                 }
             }
             if unitFinish {
-                AddToLog("Finished upgrades for priority " priorityNum)
+                ; AddToLog("Finished upgrades for priority " priorityNum)
                 break
 
             }
@@ -204,8 +207,6 @@ UpgradeUnits(state, oneTick) {
 
 ChallengeMode() {
     AddToLog("Moving to Challenge mode")
-    ChallengeMovement()
-
     while !(ok := FindText(&X, &Y, 325, 520, 489, 587, 0, 0, ModeCancel)) {
         ChallengeMovement()
     }
@@ -217,7 +218,7 @@ StoryMode() {
 
     ; Get current map and act
     currentStoryMap := MDo.Story.UI.Text
-    currentStoryAct := MDo.Story.Act.Text
+    currentStoryAct := MDo.Story.Type.Text
 
     ; Execute the movement pattern
     AddToLog("Moving to position for " currentStoryMap)
@@ -231,7 +232,7 @@ StoryMode() {
     StartStory(currentStoryMap, currentStoryAct)
 
     ; Handle play mode selection
-    if (MDo.Story.Act.Text != "Infinity") {
+    if (MDo.Story.Type.Text != "Infinity") {
         PlayHere()  ; Always PlayHere for normal story acts
     } else {
         if (MatchMaking.Value) {
@@ -248,7 +249,7 @@ LegendMode() {
 
     ; Get current map and act
     currentLegendMap := MDo.Legend.UI.Text
-    currentLegendAct := MDo.Legend.Act.Text
+    currentLegendAct := MDo.Legend.Type.Text
 
     ; Execute the movement pattern
     AddToLog("Moving to position for " currentLegendMap)
@@ -274,7 +275,7 @@ LegendMode() {
 RaidMode() {
     ; Get current map and act
     currentRaidMap := MDo.Raid.Text
-    currentRaidAct := MDo.Raid.Act.Text
+    currentRaidAct := MDo.Raid.Type.Text
 
     ; Execute the movement pattern
     AddToLog("Moving to position for " currentRaidMap)
@@ -299,7 +300,7 @@ RaidMode() {
 InfinityCastleMode() {
 
     ; Get current difficulty
-    currentDifficulty := MDo.Infinity_Castle.Text
+    currentDifficulty := MDo.Infinity_Castle.UI.Text
 
     ; Execute the movement pattern
     AddToLog("Moving to position for Infinity Castle")
@@ -389,6 +390,9 @@ MonitorEndScreen() {
     global mode, ReturnLobbyBox, MatchMaking, challengeStartTime, inChallengeMode
 
     loop {
+        if (ok := FindText(&X, &Y, 310, 484, 434, 508, 0, 0, itemrecive)) {
+            ClickUntilGone(560, 560, 310, 484, 434, 508, itemrecive, 0, 0)
+        }
         Sleep(3000)
 
         FixClick(560, 560)
@@ -432,7 +436,7 @@ MonitorEndScreen() {
 
             if (mode = "Story") {
                 AddToLog("Handling Story mode end")
-                if (MDo.Story.Act.Text != "Infinity") {
+                if (MDo.Story.Type.Text != "Infinity") {
                     if (NextLevelBox.Value && lastResult = "win") {
                         AddToLog("Next level")
                         ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyText, +260, -35, LobbyText2)
@@ -501,7 +505,7 @@ MonitorStage() {
     loop {
         Sleep(1000)
 
-        if (mode = "Story" && MDo.Story.Act.Text = "Infinity" || MDo.UI.Text = "Winter Event") {
+        if (mode = "Story" && MDo.Story.Type.Text = "Infinity" || MDo.UI.Text = "Winter Event") {
             timeElapsed := A_TickCount - lastClickTime
             if (timeElapsed >= 300000) {  ; 5 minutes
                 AddToLog("Performing anti-AFK click")
@@ -538,6 +542,9 @@ MonitorStage() {
                 } else if (mode = "Contract") {
                     return HandleContractEnd()
                 } else {
+                    if (ChallengeBox.Value) {
+                        AChallenge.win()
+                    }
                     return MonitorEndScreen()
                 }
             }
@@ -746,7 +753,7 @@ StartRaid(map, RaidAct) {
     SendInput("{Left}") ; Go to act selection
     Sleep(500)
 
-    actArrows := GetRaidActDownArrows(MDo.Raid.Act) ; Act selection down arrows
+    actArrows := GetRaidActDownArrows(MDo.Raid.Type) ; Act selection down arrows
     loop actArrows {
         SendInput("{Down}")
         Sleep(200)
@@ -1612,7 +1619,11 @@ HandlePortalJoin() {
         AddToLog("Creating " selectedPortal)
         FixClick(215, 285)  ; Click On Portal
         Sleep (1500)
-        FixClick(354, 392)  ; Click On Use
+        if (ok := FindText(&X, &Y, 157, 163, 592, 532, 0, 0, UsePortal)) {
+            ; MsgBox ok[1].x "  " ok[1].y
+            FixClick(ok[1].x-20, ok[1].y-20)
+            ; FixClick(354, 392)  ; Click On Use
+        }
         Sleep (1500)
         FixClick(250, 350)  ; Click On Open
         AddToLog("Waiting 15 seconds for others to join")
@@ -2126,4 +2137,11 @@ PlacementSpeed() {
     else if PlaceSpeed.Text = "3 sec" {
         sleep 3000
     }
+}
+
+AChallenge := {
+    win: () => IniWrite(A_Now, A_ScriptDir "/Setting/timeChallenge.ini", "Win", "Time"),
+    checkTime: () =>,
+    pass: () => DateDiff(AChallenge.getWin(), A_Now, "M"),
+    getWin: () => IniRead(A_ScriptDir "/Setting/timeChallenge.ini", "Win", "Time")
 }
